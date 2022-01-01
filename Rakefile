@@ -1,6 +1,9 @@
 require 'rake'
 require 'fileutils'
 
+CFLAGS = `sdl2-config --cflags`.chomp
+LFLAGS = `sdl2-config --libs`.chomp
+
 directory 'out' do |t|
   puts 'Creating output directory...'
   Dir.mkdir(t.name) unless Dir.exists?(t.name)
@@ -9,7 +12,7 @@ end
 rule(/\.o$/ => [
   proc {|tn| "src/#{File.basename(tn).ext('.c')}" }
 ]) do |t|
-  sh "cc -c #{t.source} -o #{t.name}"
+  sh "cc #{CFLAGS} -c #{t.source} -o #{t.name}"
 end
 
 SRC = Dir['src/*.c'].map do |f|
@@ -17,7 +20,7 @@ SRC = Dir['src/*.c'].map do |f|
 end
 DEPS = ['out'] + SRC
 file 'out/soundmaker' => DEPS do |t|
-  sh "cc #{SRC.join(' ')} -o #{t.name}"
+  sh "cc #{SRC.join(' ')} -o #{t.name} #{LFLAGS}"
 end
 
 task :run => 'out/soundmaker' do |t|
