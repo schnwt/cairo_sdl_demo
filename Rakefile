@@ -1,8 +1,14 @@
 require 'rake'
 require 'fileutils'
 
-CFLAGS = `sdl2-config --cflags`.chomp
-LFLAGS = `sdl2-config --libs`.chomp
+CFLAGS = [
+  `sdl2-config --cflags`.chomp,
+  `pkg-config cairo --cflags`.chomp
+].join(' ')
+LFLAGS = [
+  `sdl2-config --libs`.chomp,
+  `pkg-config cairo --libs`.chomp
+].join(' ')
 
 directory 'out' do |t|
   puts 'Creating output directory...'
